@@ -12,7 +12,38 @@
       margin: 0;
       overflow: hidden;
       text-align: center;
+      font-family: 'Arial';
     }
+    #chatbox {
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      margin: 10px;
+      background-color: #484848;
+      color:white;
+      font-size: 18pt;
+      border: none;
+      border-radius: 16px;
+      padding: 7px;
+      width: 20%;
+    }
+    #chat {
+      position: absolute;
+      bottom: 48px;
+      left: 0px;
+      margin: 10px;
+      background-color: rgba(0,0,0,0.3);
+      color: white;
+      font-size: 12pt;
+      border: none;
+      border-radius: 12px;
+      padding: 7px;
+      width: 20%;
+      height: 20%;
+      text-align: left;
+      overflow: hidden;
+    }
+
   </style>
   <script src='https://cdn.socket.io/4.5.0/socket.io.js'></script>
   <script src="p5.min.js"></script>
@@ -23,6 +54,28 @@
 <body>
   <main>
   </main>
+  <div id="chat">
+
+  </div>
+  <input id="chatbox" type="text" placeholder="Chat">
+
+  <script>
+    socket = io.connect(window.location.href);
+
+    socket.on('chat', (data) => {
+      let chat = document.getElementById('chat');
+      chat.innerHTML = chat.innerHTML + "<div style='color:"+data.c+";'>"+ data.msg + "</div>";
+      chat.scrollTop = chat.scrollHeight;
+    });
+
+    document.addEventListener("keyup", (event) => {
+      if (event.keyCode === 13) {
+        let chatbox = document.getElementById('chatbox');
+        socket.emit('chat',{msg: chatbox.value, c: c});
+        chatbox.value = "";
+      }
+    });
+  </script>
 </body>
 
 </html>

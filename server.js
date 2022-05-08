@@ -25,9 +25,9 @@ function newConnection(socket) {
 		recap.push(data)
 	});
 
-	socket.on('mouse', (data) => {
-		socket.broadcast.emit('mouse',data)
-		socket.emit('mouse',data)
+	socket.on('chat', (data) => {
+		socket.emit('chat',data)
+		socket.broadcast.emit('chat',data)
 	});
 
 	socket.on('recap', () => socket.emit('recap', recap));
