@@ -1,44 +1,70 @@
 var socket;
+var c;
+
+var x = 0;
+var y = 0;
 
 function setup() {
-	createCanvas(400,400);
+	createCanvas(windowWidth,windowHeight);
 	fill(255);
 	stroke(255);
 	background(24);
 	strokeWeight(10);
 
-	socket = io.connect(window.location.href);
-	socket.on('recap',recapHandler);
-	socket.on('mouse',(data) => line(data.x1,data.y1,data.x2,data.y2))
-}
+	c = '#'+Math.floor(Math.random()*16777215).toString(16);
 
-function recapHandler(data) {
-	for (const element of data) {
-		line(element.x1,element.y1,element.x2,element.y2)
-	}
+	socket = io.connect(window.location.href);
+
+	socket.on('recap',(data) => {
+		background(24);
+		for (const e of data) {
+			try {stroke(e.c)}
+			catch {}
+			line(e.x1+x,e.y1+y,e.x2+x,e.y2+y)
+		}
+	});
+
+	socket.on('draw',(data) => {
+		stroke(data.c)
+		line(data.x1+x,data.y1+y,data.x2+x,data.y2+y)
+	});
 }
 
 function draw() {
 	strokeWeight(0);
-	fill(255,0,0)
+	fill(255)
 	
+	textSize(32);
+	text('DrawJS', 8, 32);
+
 	fill(255)
 	strokeWeight(10);
 }
 
-function mouseDragged() 
-{ 
-	strokeWeight(10);
-	line(mouseX, mouseY, pmouseX, pmouseY);
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	socket.emit('recap')
+}
 
-	var data = {
-		x1: mouseX,
-		y1: mouseY,
-		x2: pmouseX,
-		y2: pmouseY
+function mouseDragged(event) 
+{ 
+	if (mouseButton == LEFT) {
+		strokeWeight(10);
+		stroke(c)
+		var data = {
+			x1: mouseX-x,
+			y1: mouseY-y,
+			x2: pmouseX-x,
+			y2: pmouseY-y,
+			c: c
+		}
+		
+		socket.emit('draw', data)
+	} else {
+		x += (mouseX - pmouseX);
+		y += (mouseY - pmouseY);
+		socket.emit('recap')
 	}
-	
-	socket.emit('mouse', data)
 }
 
 function mousePressed() {

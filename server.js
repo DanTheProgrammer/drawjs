@@ -17,15 +17,21 @@ io.sockets.on('connection', newConnection)
 
 var recap = Array()
 function newConnection(socket) {
-	console.log(socket.id)
+	console.log(socket.id);
 	
-	socket.on('mouse', mouseMsg)
-	
-	// Emit the recap data
-	socket.emit('recap',recap);
-
-	function mouseMsg(data) {
-		socket.broadcast.emit('mouse',data)
+	socket.on('draw', (data) => {
+		socket.broadcast.emit('draw',data)
+		socket.emit('draw',data)
 		recap.push(data)
-	}
+	});
+
+	socket.on('mouse', (data) => {
+		socket.broadcast.emit('mouse',data)
+		socket.emit('mouse',data)
+	});
+
+	socket.on('recap', () => socket.emit('recap', recap));
+
+	// Emit the recap data
+	socket.emit('recap', recap);
 }
