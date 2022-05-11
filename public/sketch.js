@@ -18,7 +18,7 @@ function setup() {
 	socket.on('recap',(data) => {
 		background(24);
 		for (const e of data) {
-			try {stroke(e.c)}
+			try {stroke(e.c)}	
 			catch {stroke(255)}
 			line(e.x1+x,e.y1+y,e.x2+x,e.y2+y)
 		}
